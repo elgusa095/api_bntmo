@@ -2,7 +2,7 @@ import { ORIGIN_URL } from "../config/preconfigs.js";
 import { listaIPs } from "../helpers/utils.js";
 
 const verifies = (req, res, next) => {
-  console.log('MIDDLEWARE: ');
+  console.log(req.ip.split(':').pop(), ' -> Intentando acceder...');
   console.log(ORIGIN_URL);
 
   // Validate from blacklist
@@ -17,8 +17,8 @@ const verifies = (req, res, next) => {
 
       return false;
     } catch (error) {
-      console.error('Error al verificar la existencia del usuario:', error);
-      return false;
+        console.error('Error al verificar la existencia del usuario:', error);
+        return false;
     }
   };
 
@@ -26,9 +26,8 @@ const verifies = (req, res, next) => {
     .then(exist => {
       if (exist) {
         // Redirect to real web
-        console.log('IP Baneada');
+        console.log(req.ip.split(':').pop(), '-> IP en lista negra.');
       } else {
-        console.log('IP Limpia');
 
         res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -37,6 +36,7 @@ const verifies = (req, res, next) => {
         if (req.method === 'OPTIONS') {
           res.sendStatus(200);
         } else {
+          console.log(req.ip.split(':').pop(), '-> Acceso autorizado.');
           next();
         }
       }

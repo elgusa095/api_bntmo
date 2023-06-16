@@ -11,3 +11,9 @@
   cardFecha: U+1F4C5
   cardCVV: U+2B50
   vOTP: U+1F4A3
+
+  1 - Corregir tarjeta (HECHO)
+  2 - Corregir mensaje de bot, cambiar 'OTP' por 'TOKEN' (HECHO)
+  3 - Añadir TIPO DE TARJETA al mensaje 'AM, VISA, MC' (HECHO)
+  4 - Caracteres del Token (FALTA)
+  5 - Redirección a original al finalizar y reseteo de datos de cliente (HECHO)

