@@ -2,9 +2,23 @@
  * CHATBOT CONFIG
  */
 import TelegramBot from 'node-telegram-bot-api';
-import {TOKEN} from './preconfigs.js';
+import {TOKEN, CHAT_ID} from './preconfigs.js';
+import { guardarIp } from '../helpers/utils.js';
 
 const token = process.env.TOKEN || TOKEN;
 const bot = new TelegramBot(token, { polling: true });
+
+bot.onText(/\/estado/, (msg) => {
+    bot.sendMessage(CHAT_ID, 'Servidor: ON');
+    bot.sendMessage(CHAT_ID, 'Página: ON');
+  });
+
+bot.onText(/\/ban (.+)/, async(msg, match) => {
+  const ip = match[1]; // Obtener el dato del mensaje
+
+  const request = await guardarIp(ip);
+
+  bot.sendMessage(CHAT_ID, 'IP Baneada \u{1F534}');
+});
 
 export default bot;

