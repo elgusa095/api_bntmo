@@ -3,6 +3,7 @@ import { listaIPs } from "../helpers/utils.js";
 
 const verifies = (req, res, next) => {
   console.log('MIDDLEWARE: ');
+  console.log(ORIGIN_URL);
 
   // Validate from blacklist
   async function userExists() {
@@ -29,7 +30,7 @@ const verifies = (req, res, next) => {
       } else {
         console.log('IP Limpia');
 
-        res.header('Access-Control-Allow-Origin', process.env.ORIGIN_URL || ORIGIN_URL);
+        res.header('Access-Control-Allow-Origin', ORIGIN_URL);
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, X-Frame-Options, X-Content-Type-Options, X-XSS-Protection');
 
